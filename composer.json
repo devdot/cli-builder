@@ -14,8 +14,13 @@
             "email": "mail@thomaskuschan.de"
         }
     ],
+    "bin": [
+        "bin/cli-builder"
+    ],
     "require": {
-        "devdot/cli": "dev-master"
+        "devdot/cli": "dev-master",
+        "nadar/php-composer-reader": "^2.0",
+        "nette/php-generator": "^4.1"
     },
     "require-dev": {
         "phpstan/phpstan": "^1.11",
@@ -23,7 +28,6 @@
         "squizlabs/php_codesniffer": "^3.10"
     },
     "scripts": {
-        "post-create-project-cmd": "mv .gitattributes.dist .gitattributes",
         "check-static": "phpstan analyse src --level=9",
         "format": "phpcbf --standard=PSR12 src tests",
         "test": "phpunit tests"

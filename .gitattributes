@@ -1,5 +1,4 @@
 bin/build export-ignore
 bin/dev export-ignore
-bin/prod export-ignore
 
 tests export-ignore
