@@ -22,6 +22,8 @@ class Kernel extends MakeCommand
             if ($this->input->getOption('force') || $this->style->confirm('Proceed anyways?', false)) {
                 $class = ClassType::from($classname);
                 $this->updateConstructor($class);
+                $this->updateLiteralsArray($class, 'services');
+                $this->updateLiteralsArray($class, 'providers');
             } else {
                 return self::FAILURE;
             }
@@ -60,5 +62,22 @@ class Kernel extends MakeCommand
         $constructor->addParameter('dir', $dir)->setType('string');
         $constructor->addParameter('namespace', $namespace)->setType('string');
         $constructor->addBody('parent::__construct($dir, $namespace);');
+    }
+
+    private function updateLiteralsArray(ClassType $class, string $property): void
+    {
+        $property = $class->getProperty($property);
+        $namespace = $class->getNamespace();
+
+        $values = [];
+        foreach ($property->getValue() as $key => $value) {
+            if (class_exists($value)) {
+                $values[$key] = new Literal($namespace->simplifyName('\\' . $value) . '::class');
+            } else {
+                $values[$key] = $value;
+            }
+        }
+
+        $property->setValue($values);
     }
 }
