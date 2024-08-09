@@ -1,0 +1,5 @@
+# exclude the generated cache
+src/ProductionContainer.php
+
+vendor
+composer.lock
