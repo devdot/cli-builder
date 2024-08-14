@@ -85,8 +85,9 @@ class Init extends Command
     protected function handleGenerateBoilerplate(): void
     {
         $this->style->section('Generate Boilerplate Code');
-        
+
         $this->runProcess([Make\Kernel::class, '-f', '--no-interaction']);
+        $this->runProcess([Make\BaseCommand::class, '--no-interaction']);
 
         $this->writeBin('dev', $this->project->namespace . '\Kernel::run(true);');
         $this->writeBin('prod', $this->project->namespace . '\Kernel::run(false);');
@@ -99,11 +100,10 @@ class Init extends Command
     {
         $filepath = $this->project->rootDirectory . '/bin/' . $file;
 
-        if(file_exists($filepath) && !$overwrite) {
+        if (file_exists($filepath) && !$overwrite) {
             $this->output->writeln('bin/' . $file . ' already exists');
             return;
-        }
-        else {
+        } else {
             $this->output->writeln('Create bin/' . $file);
             $header = '#!/usr/bin/env php' . PHP_EOL
                 . '<?php' . PHP_EOL

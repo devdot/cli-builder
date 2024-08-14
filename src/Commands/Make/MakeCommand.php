@@ -5,8 +5,10 @@ namespace Devdot\Cli\Builder\Commands\Make;
 use Devdot\Cli\Builder\Commands\Command;
 use Devdot\Cli\Builder\Generator\Printer;
 use Devdot\Cli\Builder\Project\Project;
+use Devdot\Cli\Exceptions\CommandFailedException;
 use Devdot\Cli\Traits\ForceTrait;
 use Nette\PhpGenerator\ClassType;
+use Nette\PhpGenerator\PhpNamespace;
 use Psr\Container\ContainerInterface;
 
 abstract class MakeCommand extends Command
@@ -23,24 +25,41 @@ abstract class MakeCommand extends Command
         parent::__construct($container, $project);
     }
 
-    protected function writeClass(ClassType $class): void
+    protected function writeClass(ClassType $class, PhpNamespace $namespace, bool $overwrite = false): void
     {
-        $path = $this->getPathFromNamespace($class);
+        $path = $this->getClassPathFromNamespace($class, $namespace);
 
-        $this->output->writeln('Write to ' . $path);
+        if (file_exists($path)) {
+            if ($overwrite || $this->input->getOption('force')) {
+                $this->output->writeln('Overwrite ' . $path);
+            } else {
+                $this->style->warning($path . ' exists already!');
+                if (!$this->style->confirm('Do you want to overwrite this file', $this->input->isInteractive())) {
+                    throw new CommandFailedException($path . ' exists already');
+                }
+                $this->output->writeln('Overwrite ' . $path);
+            }
+        } else {
+            $this->output->writeln('Write to ' . $path);
+        }
+
 
         $str = self::PHP_HEADER
-            . $this->printer->printNamespace($class->getNamespace())
-            . $this->printer->printClass($class, $class->getNamespace())
+            . $this->printer->printNamespace($namespace)
+            . $this->printer->printClass($class, $namespace)
         ;
+
+        if (!is_dir(dirname($path))) {
+            mkdir(dirname($path), 0777, true);
+        }
 
         file_put_contents($path, $str);
     }
 
-    protected function getPathFromNamespace(ClassType $class): string
+    protected function getClassPathFromNamespace(ClassType $class, PhpNamespace $namespace): string
     {
-        $rel = substr($class->getNamespace()->getName(), strlen($this->project->namespace));
-        $rel = str_replace($rel, '\\', '/');
+        $rel = substr($namespace->getName(), strlen($this->project->namespace));
+        $rel = str_replace('\\', '/', $rel);
 
         if (!str_ends_with($rel, '/')) {
             $rel .= '/';

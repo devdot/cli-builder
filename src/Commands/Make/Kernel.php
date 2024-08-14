@@ -48,7 +48,7 @@ class Kernel extends MakeCommand
 
         $class->getNamespace()->addUse(\Devdot\Cli\Kernel::class, 'BaseKernel');
 
-        $this->writeClass($class);
+        $this->writeClass($class, $class->getNamespace(), true);
 
         return self::SUCCESS;
     }
