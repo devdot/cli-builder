@@ -85,7 +85,32 @@ class Init extends Command
     protected function handleGenerateBoilerplate(): void
     {
         $this->style->section('Generate Boilerplate Code');
+        
         $this->runProcess([Make\Kernel::class, '-f', '--no-interaction']);
+
+        $this->writeBin('dev', $this->project->namespace . '\Kernel::run(true);');
+        $this->writeBin('prod', $this->project->namespace . '\Kernel::run(false);');
+        $this->writeBin('build', $this->project->namespace . '\Kernel::cacheContainer();');
+
         $this->output->writeln('');
+    }
+
+    private function writeBin(string $file, string $code, bool $overwrite = false): void
+    {
+        $filepath = $this->project->rootDirectory . '/bin/' . $file;
+
+        if(file_exists($filepath) && !$overwrite) {
+            $this->output->writeln('bin/' . $file . ' already exists');
+            return;
+        }
+        else {
+            $this->output->writeln('Create bin/' . $file);
+            $header = '#!/usr/bin/env php' . PHP_EOL
+                . '<?php' . PHP_EOL
+                . PHP_EOL
+                . 'require $_composer_autoload_path ?? __DIR__ . \'/../vendor/autoload.php\';' . PHP_EOL
+                . PHP_EOL;
+            file_put_contents($filepath, $header . trim($code) . PHP_EOL);
+        }
     }
 }
