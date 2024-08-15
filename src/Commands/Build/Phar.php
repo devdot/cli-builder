@@ -1,10 +1,11 @@
 <?php
 
-namespace Devdot\Cli\Builder\Commands;
+namespace Devdot\Cli\Builder\Commands\Build;
 
+use Devdot\Cli\Builder\Commands\Command;
 use Devdot\Cli\Traits\RunProcessTrait;
 
-class Build extends Command
+class Phar extends Command
 {
     use RunProcessTrait;
 
@@ -60,7 +61,7 @@ class Build extends Command
     {
         $this->style->section('Build executable phar');
 
-        $pharComposerPath = realpath(__DIR__ . '/../../bin/phar-composer.phar');
+        $pharComposerPath = realpath(__DIR__ . '/../../../bin/phar-composer.phar');
 
         $this->runProcess([$pharComposerPath, 'build', $this->buildPath]);
 
