@@ -1,6 +1,14 @@
 bin/build export-ignore
 bin/dev export-ignore
+bin/pack export-ignore
+bin/prod export-ignore
 
+# set the phars as binary
+bin/cli-builder binary
+bin/phar-composer.phar binary
+
+# ignore src because everything is phar-ed
+src export-ignore
 tests export-ignore
 
 phpstan.neon export-ignore

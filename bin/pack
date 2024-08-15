@@ -1,0 +1,6 @@
+#!/bin/bash
+
+bin/dev build:readme
+bin/dev build:phar
+rm bin/cli-builder
+mv cli-builder.phar bin/cli-builder
