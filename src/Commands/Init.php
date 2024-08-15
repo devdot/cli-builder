@@ -41,8 +41,23 @@ class Init extends Command
         if (file_exists($this->project->rootDirectory . '/.gitattributes.dist')) {
             $this->runProcess(['mv', '.gitattributes.dist', '.gitattributes']);
         } else {
-            $this->output->writeln('.gitattributes.dist does not exist anymore');
+            $this->output->writeln('.gitattributes.dist does not exist anymore', $this->output::VERBOSITY_VERBOSE);
+
+            $this->createFileLines('.gitattributes', [
+                'bin/build export-ignore',
+                'bin/dev export-ignore',
+                'bin/prod export-ignore',
+                '',
+                'tests export-ignore',
+            ]);
         }
+
+        $this->createFileLines('.gitignore', [
+            '# exclude the generated cache',
+            'src/ProductionContainer.php',
+            '',
+            'vendor',
+        ]);
 
         $this->output->writeln('');
     }
@@ -63,9 +78,6 @@ class Init extends Command
 
         $description = $this->style->ask('Description', $data['description'] ?? '');
         $this->runProcess(['composer', 'config', 'description', $description], true);
-
-        $license = $this->style->ask('License', ($data['license'][0] ?? $data['license']) ?? 'MIT');
-        $this->runProcess(['composer', 'config', 'license', $license], true);
 
         $this->output->writeln('');
     }
@@ -89,6 +101,10 @@ class Init extends Command
 
         $this->runProcess([Make\Kernel::class, '-f', '--no-interaction']);
         $this->runProcess([Make\BaseCommand::class, '--no-interaction']);
+
+        if (!is_dir($this->project->rootDirectory . '/bin')) {
+            mkdir($this->project->rootDirectory . '/bin', 0777, true);
+        }
 
         $this->writeBin('dev', $this->project->namespace . '\Kernel::run(true);');
         $this->writeBin('prod', $this->project->namespace . '\Kernel::run(false);');
@@ -114,6 +130,33 @@ class Init extends Command
                 . 'require $_composer_autoload_path ?? __DIR__ . \'/../vendor/autoload.php\';' . PHP_EOL
                 . PHP_EOL;
             file_put_contents($filepath, $header . trim($code) . PHP_EOL);
+
+            $this->runProcess(['chmod', '+x', $filepath], true);
         }
+    }
+
+    private function createFile(string $filename, string $content): void
+    {
+        $path = $this->project->rootDirectory . '/' . $filename;
+        $force = $this->input->getOption('force');
+        assert(is_bool($force));
+
+        if (file_exists($path)) {
+            if ($force || $this->style->confirm('Overwrite ' . $filename, $this->input->isInteractive())) {
+                $this->output->writeln('Overwrite ' . $filename);
+                file_put_contents($path, $content);
+            }
+        } else {
+            $this->output->writeln('Write ' . $filename);
+            file_put_contents($path, $content);
+        }
+    }
+
+    /**
+     * @param string[] $lines
+     */
+    private function createFileLines(string $filename, array $lines): void
+    {
+        $this->createFile($filename, implode(PHP_EOL, $lines) . PHP_EOL);
     }
 }

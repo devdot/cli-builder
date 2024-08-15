@@ -3,7 +3,6 @@
 namespace Devdot\Cli\Builder\Commands\Make;
 
 use Devdot\Cli\Command;
-use Devdot\Cli\Contracts\ContainerInterface;
 
 class BaseCommand extends MakeCommand
 {
@@ -18,7 +17,6 @@ class BaseCommand extends MakeCommand
     {
         $namespace = $this->getNamespace();
         $namespace->addUse(Command::class, 'CliCommand');
-        $namespace->addUse(ContainerInterface::class);
 
         $class = $this->getClass();
         $class
@@ -26,8 +24,7 @@ class BaseCommand extends MakeCommand
             ->setAbstract()
         ;
         $constructor = $class->addMethod('__construct');
-        $constructor->addParameter('container')->setType(ContainerInterface::class);
-        $constructor->setBody('parent::__construct($container);');
+        $constructor->setBody('parent::__construct();');
     }
 
     protected function getMakeNamespace(): string

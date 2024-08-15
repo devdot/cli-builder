@@ -3,6 +3,7 @@
     "description": "Tools for development of devdot/cli.",
     "type": "project",
     "license": "MIT",
+    "keywords": ["dev"],
     "autoload": {
         "psr-4": {
             "Devdot\\Cli\\Builder\\": "src/"
@@ -20,7 +21,8 @@
     "require": {
         "devdot/cli": "dev-master",
         "nadar/php-composer-reader": "^2.0",
-        "nette/php-generator": "^4.1"
+        "nette/php-generator": "^4.1",
+        "nikic/php-parser": "^4.7|^5"
     },
     "require-dev": {
         "phpstan/phpstan": "^1.11",
