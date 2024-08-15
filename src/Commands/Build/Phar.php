@@ -2,7 +2,9 @@
 
 namespace Devdot\Cli\Builder\Commands\Build;
 
+use Phar as PhpPhar;
 use Devdot\Cli\Builder\Commands\Command;
+use Devdot\Cli\Exceptions\CommandFailedException;
 use Devdot\Cli\Traits\RunProcessTrait;
 
 class Phar extends Command
@@ -48,7 +50,7 @@ class Phar extends Command
             mkdir($this->buildPath, 0777, true);
             $this->runProcess(['git', 'clone', '.', $this->buildPath]);
         } else {
-            $this->runProcess(['git', 'pull'], false, $this->buildPath);
+            $this->runProcess(['git', 'pull', '--rebase', '--force'], false, $this->buildPath);
         }
 
         $this->runProcess(['cp', 'composer.lock', $this->buildPath . '/composer.lock']);
@@ -61,7 +63,20 @@ class Phar extends Command
     {
         $this->style->section('Build executable phar');
 
-        $pharComposerPath = realpath(__DIR__ . '/../../../bin/phar-composer.phar');
+        $pharSearchPath = __DIR__ . '/../../../bin/phar-composer.phar';
+        $pharComposerPath = realpath($pharSearchPath);
+
+        if ($pharComposerPath === false) {
+            // we might be inside a phar, check for that
+            if (class_exists(PhpPhar::class) && $pharPath = PhpPhar::running(false)) {
+                $pharSearchPath = dirname($pharPath) . '/phar-composer.phar';
+                $pharComposerPath = realpath($pharSearchPath);
+            }
+
+            if ($pharComposerPath === false) {
+                throw new CommandFailedException('Could not locate phar-composer.phar! Searching at ' . $pharSearchPath);
+            }
+        }
 
         $this->runProcess([$pharComposerPath, 'build', $this->buildPath]);
 
