@@ -5,11 +5,11 @@ namespace Devdot\Cli\Builder\Commands\Make;
 use Devdot\Cli\Builder\Commands\Command;
 use Devdot\Cli\Builder\Generator\Printer;
 use Devdot\Cli\Builder\Project\Project;
+use Devdot\Cli\Contracts\ContainerInterface;
 use Devdot\Cli\Exceptions\CommandFailedException;
 use Devdot\Cli\Traits\ForceTrait;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PhpNamespace;
-use Psr\Container\ContainerInterface;
 
 abstract class MakeCommand extends Command
 {
@@ -31,9 +31,7 @@ abstract class MakeCommand extends Command
         $relativePath = $this->makeRelativePath($path);
 
         if (file_exists($path)) {
-            if ($overwrite || $this->input->getOption('force')) {
-                $this->output->writeln('Overwrite ' . $path);
-            } else {
+            if (!($overwrite || $this->input->getOption('force'))) {
                 if ($this->input->isInteractive()) {
                     $this->style->warning($relativePath . ' exists already!');
                 }
@@ -41,8 +39,9 @@ abstract class MakeCommand extends Command
                 if (!$this->style->confirm('Do you want to overwrite this file', $this->input->isInteractive())) {
                     throw new CommandFailedException($relativePath . ' exists already');
                 }
-                $this->output->writeln('Overwrite ' . $relativePath);
             }
+
+            $this->output->writeln('Overwrite ' . $relativePath);
         } else {
             $this->output->writeln('Write to ' . $relativePath);
         }
@@ -62,14 +61,19 @@ abstract class MakeCommand extends Command
 
     protected function getClassPathFromNamespace(ClassType $class, PhpNamespace $namespace): string
     {
-        $rel = substr($namespace->getName(), strlen($this->project->namespace));
+        return $this->makePathFromNamespace($namespace->getName() . '\\' . $class->getName());
+    }
+
+    protected function makePathFromNamespace(string $namespace, string $extension = '.php'): string
+    {
+        $rel = substr($namespace, strlen($this->project->namespace));
         $rel = str_replace('\\', '/', $rel);
 
-        if (!str_ends_with($rel, '/')) {
-            $rel .= '/';
+        if (str_ends_with($rel, '/')) {
+            $rel = substr($rel, 0, -1);
         }
 
-        return $this->project->srcDirectory . $rel . $class->getName() . '.php';
+        return $this->project->srcDirectory . $rel . $extension;
     }
 
     protected function makeRelativePath(string $path): string

@@ -8,6 +8,8 @@ class Build extends Command
 {
     use RunProcessTrait;
 
+    private string $buildPath;
+
     protected function configure(): void
     {
         $this->setDescription('Build a standalone executable phar for this project');

@@ -3,7 +3,7 @@
 namespace Devdot\Cli\Builder\Commands\Make;
 
 use Devdot\Cli\Command;
-use Psr\Container\ContainerInterface;
+use Devdot\Cli\Contracts\ContainerInterface;
 
 class BaseCommand extends MakeCommand
 {

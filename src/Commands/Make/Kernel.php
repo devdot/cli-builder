@@ -4,6 +4,7 @@ namespace Devdot\Cli\Builder\Commands\Make;
 
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Literal;
+use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\PhpNamespace;
 
 class Kernel extends MakeCommand
@@ -17,18 +18,30 @@ class Kernel extends MakeCommand
     {
         $classname = $this->project->namespace . '\\Kernel';
         $class = null;
+        $namespace = new PhpNamespace($this->project->namespace);
+
         if (class_exists($classname)) {
             $this->style->warning($classname . ' exists already!');
             if ($this->input->getOption('force') || $this->style->confirm('Proceed anyways?', false)) {
-                $class = ClassType::from($classname);
+                // load the namespace from the file
+                $file = PhpFile::fromCode(file_get_contents($this->makePathFromNamespace($classname)) ?: '');
+                $loadedNamespace = $file->getNamespaces()[$this->project->namespace] ?? null;
+                if ($loadedNamespace) {
+                    $loadedNamespace->removeClass('Kernel');
+                    $namespace = $loadedNamespace;
+                }
+
+                // load the class from a real object
+                $class = ClassType::from($classname, true);
+                assert($class instanceof ClassType);
                 $this->updateConstructor($class);
-                $this->updateLiteralsArray($class, 'services');
-                $this->updateLiteralsArray($class, 'providers');
+                $this->updateLiteralsArray($class, $namespace, 'services');
+                $this->updateLiteralsArray($class, $namespace, 'providers');
             } else {
                 return self::FAILURE;
             }
         } else {
-            $class = new ClassType('Kernel', new PhpNamespace($this->project->namespace));
+            $class = new ClassType('Kernel', $namespace);
             $class
                 ->setExtends(\Devdot\Cli\Kernel::class)
                 ->setFinal(true)
@@ -46,9 +59,9 @@ class Kernel extends MakeCommand
             $this->updateConstructor($class);
         }
 
-        $class->getNamespace()->addUse(\Devdot\Cli\Kernel::class, 'BaseKernel');
+        $namespace->addUse(\Devdot\Cli\Kernel::class, 'BaseKernel');
 
-        $this->writeClass($class, $class->getNamespace(), true);
+        $this->writeClass($class, $namespace, true);
 
         return self::SUCCESS;
     }
@@ -64,13 +77,15 @@ class Kernel extends MakeCommand
         $constructor->addBody('parent::__construct($dir, $namespace);');
     }
 
-    private function updateLiteralsArray(ClassType $class, string $property): void
+    private function updateLiteralsArray(ClassType $class, PhpNamespace $namespace, string $property): void
     {
         $property = $class->getProperty($property);
-        $namespace = $class->getNamespace();
 
         $values = [];
-        foreach ($property->getValue() as $key => $value) {
+        $currentValues = $property->getValue();
+        assert(is_array($currentValues));
+
+        foreach ($currentValues as $key => $value) {
             if (class_exists($value)) {
                 $values[$key] = new Literal($namespace->simplifyName('\\' . $value) . '::class');
             } else {

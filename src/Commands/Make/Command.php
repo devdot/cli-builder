@@ -30,6 +30,7 @@ class Command extends MakeCommand
     {
         // find the project root base command
         $extends = $this->input->getOption('extends');
+        assert(is_string($extends));
         if (!class_exists($extends)) {
             throw new CommandFailedException('Base class ' . $extends . ' does not exist!');
         }

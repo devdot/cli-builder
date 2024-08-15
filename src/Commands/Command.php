@@ -4,7 +4,7 @@ namespace Devdot\Cli\Builder\Commands;
 
 use Devdot\Cli\Builder\Project\Project;
 use Devdot\Cli\Command as CliCommand;
-use Psr\Container\ContainerInterface;
+use Devdot\Cli\Contracts\ContainerInterface;
 
 abstract class Command extends CliCommand
 {
