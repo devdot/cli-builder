@@ -108,7 +108,7 @@ class Init extends Command
 
         $this->writeBin('dev', $this->project->namespace . '\Kernel::run(true);');
         $this->writeBin('prod', $this->project->namespace . '\Kernel::run(false);');
-        $this->writeBin('build', $this->project->namespace . '\Kernel::cacheContainer();');
+        $this->writeBin('build', $this->project->namespace . '\Kernel::cacheContainer(false, $_SERVER[\'argv\'][1] ?? null, $_SERVER[\'argv\'][2] ?? null);');
 
         $this->runProcess([Make\Command::class, 'Example', '--no-interaction']);
 

@@ -6,6 +6,7 @@ use Phar as PhpPhar;
 use Devdot\Cli\Builder\Commands\Command;
 use Devdot\Cli\Exceptions\CommandFailedException;
 use Devdot\Cli\Traits\RunProcessTrait;
+use Symfony\Component\Console\Input\InputOption;
 
 class Phar extends Command
 {
@@ -16,6 +17,7 @@ class Phar extends Command
     protected function configure(): void
     {
         $this->setDescription('Build a standalone executable phar for this project.');
+        $this->addOption('build-version', null, InputOption::VALUE_REQUIRED, 'Version to be used in container build.');
     }
 
     protected function handle(): int
@@ -36,7 +38,15 @@ class Phar extends Command
     private function handleBuildContainer(): void
     {
         $this->style->section('Build production container');
-        $this->runProcess(['bin/build'], false, $this->buildPath);
+
+        $command = ['bin/build'];
+        $version = $this->input->getOption('build-version');
+        if ($version) {
+            assert(is_string($version));
+            $command[] = $version;
+        }
+
+        $this->runProcess($command, false, $this->buildPath);
 
         $this->output->writeln('');
     }

@@ -3,4 +3,4 @@
 
 require $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
 
-Devdot\Cli\Builder\Kernel::cacheContainer();
+Devdot\Cli\Builder\Kernel::cacheContainer(false, $_SERVER['argv'][1] ?? null, $_SERVER['argv'][2] ?? null);
