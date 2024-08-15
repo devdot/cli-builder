@@ -19,6 +19,7 @@ class Init extends Command
     {
         $this->setRunProcessDefaultCwd($this->project->rootDirectory);
         $this->setRunProcessThrowErrors(true);
+        $this->setRunProcessShowInternalCommand(true);
 
         $this->output->writeln('Initialize a new CLI project at: ' . $this->project->rootDirectory . '');
         $this->output->writeln('');
@@ -63,7 +64,7 @@ class Init extends Command
         $description = $this->style->ask('Description', $data['description'] ?? '');
         $this->runProcess(['composer', 'config', 'description', $description], true);
 
-        $license = $this->style->ask('License', $data['license'] ?? 'MIT');
+        $license = $this->style->ask('License', ($data['license'][0] ?? $data['license']) ?? 'MIT');
         $this->runProcess(['composer', 'config', 'license', $license], true);
 
         $this->output->writeln('');
@@ -92,6 +93,8 @@ class Init extends Command
         $this->writeBin('dev', $this->project->namespace . '\Kernel::run(true);');
         $this->writeBin('prod', $this->project->namespace . '\Kernel::run(false);');
         $this->writeBin('build', $this->project->namespace . '\Kernel::cacheContainer();');
+
+        $this->runProcess([Make\Command::class, 'Example', '--no-interaction']);
 
         $this->output->writeln('');
     }

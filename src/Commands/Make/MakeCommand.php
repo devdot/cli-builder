@@ -28,19 +28,23 @@ abstract class MakeCommand extends Command
     protected function writeClass(ClassType $class, PhpNamespace $namespace, bool $overwrite = false): void
     {
         $path = $this->getClassPathFromNamespace($class, $namespace);
+        $relativePath = $this->makeRelativePath($path);
 
         if (file_exists($path)) {
             if ($overwrite || $this->input->getOption('force')) {
                 $this->output->writeln('Overwrite ' . $path);
             } else {
-                $this->style->warning($path . ' exists already!');
-                if (!$this->style->confirm('Do you want to overwrite this file', $this->input->isInteractive())) {
-                    throw new CommandFailedException($path . ' exists already');
+                if ($this->input->isInteractive()) {
+                    $this->style->warning($relativePath . ' exists already!');
                 }
-                $this->output->writeln('Overwrite ' . $path);
+
+                if (!$this->style->confirm('Do you want to overwrite this file', $this->input->isInteractive())) {
+                    throw new CommandFailedException($relativePath . ' exists already');
+                }
+                $this->output->writeln('Overwrite ' . $relativePath);
             }
         } else {
-            $this->output->writeln('Write to ' . $path);
+            $this->output->writeln('Write to ' . $relativePath);
         }
 
 
@@ -66,5 +70,16 @@ abstract class MakeCommand extends Command
         }
 
         return $this->project->srcDirectory . $rel . $class->getName() . '.php';
+    }
+
+    protected function makeRelativePath(string $path): string
+    {
+        $path = realpath($path) ?: $path;
+
+        if (str_starts_with($path, $this->project->rootDirectory)) {
+            $path = '.' . substr($path, strlen($this->project->rootDirectory));
+        }
+
+        return $path;
     }
 }
