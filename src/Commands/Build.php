@@ -12,7 +12,7 @@ class Build extends Command
 
     protected function configure(): void
     {
-        $this->setDescription('Build a standalone executable phar for this project');
+        $this->setDescription('Build a standalone executable phar for this project.');
     }
 
     protected function handle(): int

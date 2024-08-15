@@ -11,7 +11,7 @@ class Kernel extends MakeCommand
 {
     protected function configure(): void
     {
-        $this->setDescription('Generate a fresh Kernel instance');
+        $this->setDescription('Generate a fresh Kernel instance. If a Kernel already exists, this will carefully transform the old Kernel.');
     }
 
     protected function handle(): int
@@ -21,7 +21,8 @@ class Kernel extends MakeCommand
         $namespace = new PhpNamespace($this->project->namespace);
 
         if (class_exists($classname)) {
-            $this->style->warning($classname . ' exists already!');
+            $this->style->note($classname . ' exists already!');
+            $this->style->writeln('This command is carefully designed to upgrade old Kernels into new ones. However, it is recommended to have a backup before proceeding.');
             if ($this->input->getOption('force') || $this->style->confirm('Proceed anyways?', false)) {
                 // load the namespace from the file
                 $file = PhpFile::fromCode(file_get_contents($this->makePathFromNamespace($classname)) ?: '');

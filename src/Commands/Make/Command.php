@@ -13,6 +13,7 @@ class Command extends MakeCommand
 
     protected function configure(): void
     {
+        $this->setDescription('Make a new command class. Will be named and registered automatically base on the namespace path.');
         $this->addOption('extends', null, InputOption::VALUE_REQUIRED, 'The base Command class of your project', $this->getExtendsDefault());
     }
 

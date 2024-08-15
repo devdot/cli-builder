@@ -8,6 +8,11 @@ class BaseCommand extends MakeCommand
 {
     use ClassFromNameTrait;
 
+    protected function configure(): void
+    {
+        $this->setDescription('Generate a command base class. If located at the default location, it will be used as default parent for make:command.');
+    }
+
     protected function getDefaultMakeName(): ?string
     {
         return 'Command';

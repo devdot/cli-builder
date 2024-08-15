@@ -9,6 +9,11 @@ class Provider extends MakeCommand
 {
     use ClassFromNameTrait;
 
+    protected function configure(): void
+    {
+        $this->setDescription('Make a new service provider. Service Providers may register complex services into the container.');
+    }
+
     protected function getMakeNamespace(): string
     {
         return 'Providers\\';
