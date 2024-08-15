@@ -14,7 +14,7 @@ class AddBinary extends Command
     protected function configure(): void
     {
         $this->setDescription('Add the project production binary to composer.json.');
-        $this->addOption('rename', null, InputOption::VALUE_REQUIRED, 'Rename the to this name before adding it to composer', 'bin/' . basename($this->project->rootDirectory));
+        $this->addOption('rename', null, InputOption::VALUE_REQUIRED, 'Rename the to this name before adding it to composer', 'bin/' . $this->project->name);
     }
 
     protected function handle(): int

@@ -25,7 +25,7 @@ class Readme extends Command
         $this->runProcess(['bin/dev', 'list'], true);
 
         $content = $this->getLastProcess()->getOutput();
-        $name = basename($this->project->rootDirectory);
+        $name = $this->project->name;
         $marker = '```' . $name . PHP_EOL;
 
         if (file_exists($path)) {

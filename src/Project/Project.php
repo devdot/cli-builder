@@ -8,12 +8,14 @@ use Nadar\PhpComposerReader\ComposerReader;
 class Project
 {
     public readonly string $namespace;
+    public readonly string $name;
 
     public function __construct(
         public readonly ComposerReader $composer,
         public readonly string $rootDirectory,
         public readonly string $srcDirectory,
     ) {
+        $this->setNameFromComposer();
         $this->setNamespaceFromComposer();
     }
 
@@ -25,6 +27,13 @@ class Project
             $root,
             $root . '/src',
         );
+    }
+
+    private function setNameFromComposer(): void
+    {
+        $name = $this->composer->getContent()['name'] ?? $this->rootDirectory;
+        $explode = explode('/', $name);
+        $this->name = $explode[count($explode) - 1];
     }
 
     private function setNamespaceFromComposer(): void

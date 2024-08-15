@@ -70,7 +70,7 @@ class Init extends Command
 
         $defaultName = $data['name'];
         if ($data['name'] === 'devdot/cli-project') {
-            $defaultName = ($_SERVER['COMPOSER_DEFAULT_VENDOR'] ?? 'devdot') . '/' . basename($this->project->rootDirectory);
+            $defaultName = ($_SERVER['COMPOSER_DEFAULT_VENDOR'] ?? 'devdot') . '/' . $this->project->name;
         }
 
         $name = $this->style->ask('Package name', $defaultName);

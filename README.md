@@ -25,9 +25,10 @@ Available commands:
   help                 Display help for a command
   init                 Initialize a new CLI project.
   list                 List commands
+  project              Show information about the current project.
  build
   build:phar           Build a standalone executable phar for this project.
-  build:readme         
+  build:readme         Make or update a README.md and fill it with the content of list.
  composer
   composer:add-binary  Add the project production binary to composer.json.
  make
