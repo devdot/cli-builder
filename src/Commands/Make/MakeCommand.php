@@ -5,7 +5,6 @@ namespace Devdot\Cli\Builder\Commands\Make;
 use Devdot\Cli\Builder\Commands\Command;
 use Devdot\Cli\Builder\Generator\Printer;
 use Devdot\Cli\Builder\Project\Project;
-use Devdot\Cli\Contracts\ContainerInterface;
 use Devdot\Cli\Exceptions\CommandFailedException;
 use Devdot\Cli\Traits\ForceTrait;
 use Nette\PhpGenerator\ClassType;
@@ -18,11 +17,10 @@ abstract class MakeCommand extends Command
     const PHP_HEADER = '<?php' . PHP_EOL . PHP_EOL;
 
     public function __construct(
-        ContainerInterface $container,
         Project $project,
         private Printer $printer,
     ) {
-        parent::__construct($container, $project);
+        parent::__construct($project);
     }
 
     protected function writeClass(ClassType $class, PhpNamespace $namespace, bool $overwrite = false): void
