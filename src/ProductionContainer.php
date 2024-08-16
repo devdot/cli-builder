@@ -249,7 +249,7 @@ class ProductionContainer extends \Devdot\Cli\Container\CachedContainer
      */
     protected static function getApplicationService($container)
     {
-        return $container->services['application'] = new \Devdot\Cli\Application('cli-builder', '1.0.1', new \Symfony\Component\Console\CommandLoader\ContainerCommandLoader($container, $container->parameters['commands_as_map']), false);
+        return $container->services['application'] = new \Devdot\Cli\Application('cli-builder', '1.0.2', new \Symfony\Component\Console\CommandLoader\ContainerCommandLoader($container, $container->parameters['commands_as_map']), false);
     }
 
     /**
@@ -311,7 +311,7 @@ class ProductionContainer extends \Devdot\Cli\Container\CachedContainer
             'development' => false,
             'namespace' => 'Devdot\\Cli\\Builder',
             'application_name' => 'cli-builder',
-            'application_version' => '1.0.1',
+            'application_version' => '1.0.2',
             'commands_as_map' => [
                 'build:phar' => 'Devdot\\Cli\\Builder\\Commands\\Build\\Phar',
                 'build:readme' => 'Devdot\\Cli\\Builder\\Commands\\Build\\Readme',

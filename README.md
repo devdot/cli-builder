@@ -7,7 +7,7 @@ See documentation on [https://github.com/devdot/cli](GitHub).
 
 
 ```cli-builder
-cli-builder 1.0.0
+cli-builder 1.0.1
 
 Usage:
   command [options] [arguments]
