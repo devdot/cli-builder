@@ -1,3 +1,6 @@
+.gitattributes export-ignore
+.gitignore export-ignore
+
 bin/build export-ignore
 bin/dev export-ignore
 bin/pack export-ignore
@@ -6,8 +9,6 @@ bin/prod export-ignore
 # set the phars as binary
 bin/*.phar binary
 
-# ignore src because everything is phar-ed
-src export-ignore
-tests export-ignore
+tests/ export-ignore
 
 phpstan.neon export-ignore

@@ -48,7 +48,7 @@ class Init extends Command
                 'bin/dev export-ignore',
                 'bin/prod export-ignore',
                 '',
-                'tests export-ignore',
+                'tests/ export-ignore',
             ]);
         }
 
