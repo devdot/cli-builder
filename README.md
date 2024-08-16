@@ -27,7 +27,7 @@ Available commands:
   list                 List commands
   project              Show information about the current project.
  build
-  build:phar           Build a standalone executable phar for this project.
+  build:phar           Build a standalone executable PHAR for this project.
   build:readme         Make or update a README.md and fill it with the content of list.
  composer
   composer:add-binary  Add the project production binary to composer.json.
