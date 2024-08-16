@@ -1,8 +1,8 @@
 tmp/
-cli-builder.phar
+/cli-builder.phar
 
 # exclude the generated cache
-src/ProductionContainer.php
+# src/ProductionContainer.php
 
 vendor
 composer.lock

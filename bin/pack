@@ -1,14 +1,14 @@
 #!/bin/bash
 
 if [ "$1" == "" ]; then
-    echo "You need to supply version as argument this script!"
+    echo "You need to supply version as argument!"
     exit
 fi
 
 bin/dev build:readme
-bin/dev build:phar --build-version=$1
-rm bin/cli-builder
-mv cli-builder.phar bin/cli-builder
+bin/build $1
 
+git add src/ProductionContainer.php
 git add README.md
-git add bin/cli-builder
+git commit -m "Release $1"
+git tag "v$1"

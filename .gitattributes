@@ -4,8 +4,7 @@ bin/pack export-ignore
 bin/prod export-ignore
 
 # set the phars as binary
-bin/cli-builder binary
-bin/phar-composer.phar binary
+bin/*.phar binary
 
 # ignore src because everything is phar-ed
 src export-ignore
