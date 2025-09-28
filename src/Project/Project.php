@@ -2,6 +2,7 @@
 
 namespace Devdot\Cli\Builder\Project;
 
+use Devdot\Cli\DirectoryProject\WorkingDirectory;
 use Nadar\PhpComposerReader\AutoloadSection;
 use Nadar\PhpComposerReader\ComposerReader;
 
@@ -12,8 +13,8 @@ class Project
 
     public function __construct(
         public readonly ComposerReader $composer,
-        public readonly string $rootDirectory,
-        public readonly string $srcDirectory,
+        public readonly WorkingDirectory $rootDirectory,
+        public readonly WorkingDirectory $srcDirectory,
     ) {
         $this->setNameFromComposer();
         $this->setNamespaceFromComposer();
@@ -21,11 +22,11 @@ class Project
 
     public static function make(): self
     {
-        $root = getcwd() ?: '';
+        $root = WorkingDirectory::fromCwd();
         return new self(
             new ComposerReader($root . '/composer.json'),
             $root,
-            $root . '/src',
+            new WorkingDirectory($root->getAbsoluteInWorkingDirectory('src')),
         );
     }
 
@@ -42,7 +43,7 @@ class Project
         /** @var \Nadar\PhpComposerReader\Autoload $autoload */
         foreach ($section as $autoload) {
             $dir = $this->rootDirectory . '/' . substr($autoload->source, 0, -1);
-            if ($dir === $this->srcDirectory) {
+            if ($dir === (string) $this->srcDirectory) {
                 $this->namespace = substr($autoload->namespace, 0, -1);
                 return;
             }
