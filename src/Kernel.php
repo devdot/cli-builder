@@ -14,6 +14,7 @@ class Kernel extends BaseKernel
     /** @var class-string<\Devdot\Cli\Container\ServiceProvider>[] */
     protected array $providers = [
         Providers\ProjectProvider::class,
+        \Devdot\Cli\DirectoryProject\WorkingDirectoryServiceProvider::class,
     ];
 
     public function __construct(string $dir = __DIR__, string $namespace = __NAMESPACE__)

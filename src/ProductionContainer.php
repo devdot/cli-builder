@@ -62,6 +62,7 @@ class ProductionContainer extends \Devdot\Cli\Container\CachedContainer
         return [
             'Devdot\\Cli\\Builder\\Generator\\Printer' => true,
             'Devdot\\Cli\\Builder\\Project\\Project' => true,
+            'Devdot\\Cli\\DirectoryProject\\WorkingDirectoryInterface' => true,
             'Symfony\\Component\\Console\\CommandLoader\\CommandLoaderInterface' => true,
         ];
     }
@@ -249,7 +250,7 @@ class ProductionContainer extends \Devdot\Cli\Container\CachedContainer
      */
     protected static function getApplicationService($container)
     {
-        return $container->services['application'] = new \Devdot\Cli\Application('cli-builder', '1.0.2', new \Symfony\Component\Console\CommandLoader\ContainerCommandLoader($container, $container->parameters['commands_as_map']), false);
+        return $container->services['application'] = new \Devdot\Cli\Application('cli-builder', '1.1', new \Symfony\Component\Console\CommandLoader\ContainerCommandLoader($container, $container->parameters['commands_as_map']), false);
     }
 
     /**
@@ -259,7 +260,7 @@ class ProductionContainer extends \Devdot\Cli\Container\CachedContainer
      */
     protected static function getProject2Service($container)
     {
-        return $container->privates['Devdot\\Cli\\Builder\\Project\\Project'] = \Devdot\Cli\Builder\Project\Project::make();
+        return $container->privates['Devdot\\Cli\\Builder\\Project\\Project'] = \Devdot\Cli\Builder\Project\Project::make(\Devdot\Cli\DirectoryProject\WorkingDirectory::fromCwd());
     }
 
     public function getParameter(string $name): array|bool|string|int|float|\UnitEnum|null
@@ -267,11 +268,14 @@ class ProductionContainer extends \Devdot\Cli\Container\CachedContainer
         if (!(isset($this->parameters[$name]) || isset($this->loadedDynamicParameters[$name]) || \array_key_exists($name, $this->parameters))) {
             throw new ParameterNotFoundException($name);
         }
+
         if (isset($this->loadedDynamicParameters[$name])) {
-            return $this->loadedDynamicParameters[$name] ? $this->dynamicParameters[$name] : $this->getDynamicParameter($name);
+            $value = $this->loadedDynamicParameters[$name] ? $this->dynamicParameters[$name] : $this->getDynamicParameter($name);
+        } else {
+            $value = $this->parameters[$name];
         }
 
-        return $this->parameters[$name];
+        return $value;
     }
 
     public function hasParameter(string $name): bool
@@ -291,7 +295,7 @@ class ProductionContainer extends \Devdot\Cli\Container\CachedContainer
             foreach ($this->loadedDynamicParameters as $name => $loaded) {
                 $parameters[$name] = $loaded ? $this->dynamicParameters[$name] : $this->getDynamicParameter($name);
             }
-            $this->parameterBag = new FrozenParameterBag($parameters);
+            $this->parameterBag = new FrozenParameterBag($parameters, []);
         }
 
         return $this->parameterBag;
@@ -311,7 +315,7 @@ class ProductionContainer extends \Devdot\Cli\Container\CachedContainer
             'development' => false,
             'namespace' => 'Devdot\\Cli\\Builder',
             'application_name' => 'cli-builder',
-            'application_version' => '1.0.2',
+            'application_version' => '1.1',
             'commands_as_map' => [
                 'build:phar' => 'Devdot\\Cli\\Builder\\Commands\\Build\\Phar',
                 'build:readme' => 'Devdot\\Cli\\Builder\\Commands\\Build\\Readme',

@@ -3,6 +3,7 @@
 namespace Devdot\Cli\Builder\Project;
 
 use Devdot\Cli\DirectoryProject\WorkingDirectory;
+use Devdot\Cli\DirectoryProject\WorkingDirectoryInterface;
 use Nadar\PhpComposerReader\AutoloadSection;
 use Nadar\PhpComposerReader\ComposerReader;
 
@@ -13,20 +14,19 @@ class Project
 
     public function __construct(
         public readonly ComposerReader $composer,
-        public readonly WorkingDirectory $rootDirectory,
-        public readonly WorkingDirectory $srcDirectory,
+        public readonly WorkingDirectoryInterface $rootDirectory,
+        public readonly WorkingDirectoryInterface $srcDirectory,
     ) {
         $this->setNameFromComposer();
         $this->setNamespaceFromComposer();
     }
 
-    public static function make(): self
+    public static function make(WorkingDirectoryInterface $root): self
     {
-        $root = WorkingDirectory::fromCwd();
         return new self(
-            new ComposerReader($root . '/composer.json'),
+            new ComposerReader($root->makeAbsolute('composer.json')),
             $root,
-            new WorkingDirectory($root->getAbsoluteInWorkingDirectory('src')),
+            new WorkingDirectory($root->makeAbsolute('src')),
         );
     }
 
