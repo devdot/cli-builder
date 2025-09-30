@@ -27,6 +27,7 @@ class ProductionContainer extends \Devdot\Cli\Container\CachedContainer
             'Devdot\\Cli\\Builder\\Commands\\Build\\Phar' => 'getPharService',
             'Devdot\\Cli\\Builder\\Commands\\Build\\Readme' => 'getReadmeService',
             'Devdot\\Cli\\Builder\\Commands\\Composer\\AddBinary' => 'getAddBinaryService',
+            'Devdot\\Cli\\Builder\\Commands\\Composer\\RenameNamespaceCommand' => 'getRenameNamespaceCommandService',
             'Devdot\\Cli\\Builder\\Commands\\Init' => 'getInitService',
             'Devdot\\Cli\\Builder\\Commands\\Make\\BaseCommand' => 'getBaseCommandService',
             'Devdot\\Cli\\Builder\\Commands\\Make\\Command' => 'getCommandService',
@@ -103,6 +104,20 @@ class ProductionContainer extends \Devdot\Cli\Container\CachedContainer
     protected static function getAddBinaryService($container)
     {
         $container->services['Devdot\\Cli\\Builder\\Commands\\Composer\\AddBinary'] = $instance = new \Devdot\Cli\Builder\Commands\Composer\AddBinary(($container->privates['Devdot\\Cli\\Builder\\Project\\Project'] ?? self::getProject2Service($container)));
+
+        $instance->setContainer($container);
+
+        return $instance;
+    }
+
+    /**
+     * Gets the public 'Devdot\Cli\Builder\Commands\Composer\RenameNamespaceCommand' shared autowired service.
+     *
+     * @return \Devdot\Cli\Builder\Commands\Composer\RenameNamespaceCommand
+     */
+    protected static function getRenameNamespaceCommandService($container)
+    {
+        $container->services['Devdot\\Cli\\Builder\\Commands\\Composer\\RenameNamespaceCommand'] = $instance = new \Devdot\Cli\Builder\Commands\Composer\RenameNamespaceCommand(($container->privates['Devdot\\Cli\\Builder\\Project\\Project'] ?? self::getProject2Service($container)));
 
         $instance->setContainer($container);
 
@@ -250,7 +265,7 @@ class ProductionContainer extends \Devdot\Cli\Container\CachedContainer
      */
     protected static function getApplicationService($container)
     {
-        return $container->services['application'] = new \Devdot\Cli\Application('cli-builder', '1.1', new \Symfony\Component\Console\CommandLoader\ContainerCommandLoader($container, $container->parameters['commands_as_map']), false);
+        return $container->services['application'] = new \Devdot\Cli\Application('cli-builder', '1.3', new \Symfony\Component\Console\CommandLoader\ContainerCommandLoader($container, $container->parameters['commands_as_map']), false);
     }
 
     /**
@@ -315,11 +330,12 @@ class ProductionContainer extends \Devdot\Cli\Container\CachedContainer
             'development' => false,
             'namespace' => 'Devdot\\Cli\\Builder',
             'application_name' => 'cli-builder',
-            'application_version' => '1.1',
+            'application_version' => '1.3',
             'commands_as_map' => [
                 'build:phar' => 'Devdot\\Cli\\Builder\\Commands\\Build\\Phar',
                 'build:readme' => 'Devdot\\Cli\\Builder\\Commands\\Build\\Readme',
                 'composer:add-binary' => 'Devdot\\Cli\\Builder\\Commands\\Composer\\AddBinary',
+                'composer:rename-namespace-command' => 'Devdot\\Cli\\Builder\\Commands\\Composer\\RenameNamespaceCommand',
                 'init' => 'Devdot\\Cli\\Builder\\Commands\\Init',
                 'make:base-command' => 'Devdot\\Cli\\Builder\\Commands\\Make\\BaseCommand',
                 'make:command' => 'Devdot\\Cli\\Builder\\Commands\\Make\\Command',
