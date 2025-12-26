@@ -17,8 +17,8 @@ class Project
         public readonly WorkingDirectoryInterface $rootDirectory,
         public readonly WorkingDirectoryInterface $srcDirectory,
     ) {
-        $this->setNameFromComposer();
-        $this->setNamespaceFromComposer();
+        $this->name = $this->getNameFromComposer();
+        $this->namespace = $this->getNamespaceFromComposer();
     }
 
     public static function make(WorkingDirectoryInterface $root): self
@@ -30,25 +30,24 @@ class Project
         );
     }
 
-    private function setNameFromComposer(): void
+    private function getNameFromComposer(): string
     {
         $name = $this->composer->getContent()['name'] ?? $this->rootDirectory;
         $explode = explode('/', $name);
-        $this->name = $explode[count($explode) - 1];
+        return $explode[count($explode) - 1];
     }
 
-    private function setNamespaceFromComposer(): void
+    private function getNamespaceFromComposer(): string
     {
         $section = new AutoloadSection($this->composer, AutoloadSection::TYPE_PSR4);
         /** @var \Nadar\PhpComposerReader\Autoload $autoload */
         foreach ($section as $autoload) {
             $dir = $this->rootDirectory . '/' . substr($autoload->source, 0, -1);
             if ($dir === (string) $this->srcDirectory) {
-                $this->namespace = substr($autoload->namespace, 0, -1);
-                return;
+                return substr($autoload->namespace, 0, -1);
             }
         }
 
-        $this->namespace = 'App';
+        return 'App';
     }
 }

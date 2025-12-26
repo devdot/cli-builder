@@ -1,12 +1,14 @@
+includes:
+    - vendor/phpstan/phpstan-symfony/extension.neon
+    - vendor/phpstan/phpstan-symfony/rules.neon
+
 parameters:
     paths:
         - src/
     level: 9
 
+    symfony:
+        consoleApplicationLoader: tests/console.php
+
     excludePaths:
         - src/ProductionContainer.php
-
-    ignoreErrors:
-        - message: '#Readonly property [a-zA-Z0-9\\]+::\$[a-zA-Z0-9_]+ is assigned outside of the constructor.#'
-          paths:
-            - src/Project/Project.php

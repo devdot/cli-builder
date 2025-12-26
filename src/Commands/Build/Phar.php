@@ -47,7 +47,6 @@ class Phar extends Command
         $command = ['bin/build'];
         $version = $this->input->getOption('build-version');
         if ($version) {
-            assert(is_string($version));
             $command[] = $version;
         }
 
@@ -61,7 +60,6 @@ class Phar extends Command
         $this->style->section('Build temporary project');
 
         $branch = $this->input->getOption('branch');
-        assert(is_string($branch));
 
         if (!is_dir($this->buildPath)) {
             // $this->runProcess(['rm', '-rf', $this->buildPath]);
@@ -84,8 +82,6 @@ class Phar extends Command
     {
         $excludes = $this->input->getOption('exclude');
         if ($excludes) {
-            assert(is_array($excludes));
-
             $this->style->section('Remove excluded files');
 
             foreach ($excludes as $file) {
@@ -106,8 +102,6 @@ class Phar extends Command
     {
         $binary = $this->input->getOption('binary');
         if ($binary) {
-            assert(is_string($binary));
-
             $this->style->section('Change deploy binary');
 
             $path = realpath($this->buildPath . '/' . $binary);

@@ -12,9 +12,10 @@ abstract class RunCommand extends Command
     protected function handle(): int
     {
         $command = $_SERVER['argv'];
+        assert(is_array($command));
         $name = $this->getName();
 
-        while ($command[0] !== $name) {
+        while ($command[0] ?? '' !== $name) {
             array_shift($command);
         }
 

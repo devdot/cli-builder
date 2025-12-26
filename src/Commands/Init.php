@@ -70,13 +70,17 @@ class Init extends Command
 
         $defaultName = $data['name'];
         if ($data['name'] === 'devdot/cli-project') {
-            $defaultName = ($_SERVER['COMPOSER_DEFAULT_VENDOR'] ?? 'devdot') . '/' . basename($this->project->rootDirectory);
+            $name = $_SERVER['COMPOSER_DEFAULT_VENDOR'];
+            $name = is_string($name) ? $name : 'devdot';
+            $defaultName = $name . '/' . basename($this->project->rootDirectory);
         }
 
         $name = $this->style->ask('Package name', $defaultName);
+        assert(is_string($name));
         $this->runProcess(['composer', 'config', 'name', $name], true);
 
         $description = $this->style->ask('Description', $data['description'] ?? '');
+        assert(is_string($description));
         $this->runProcess(['composer', 'config', 'description', $description], true);
 
         $this->output->writeln('');
@@ -139,7 +143,6 @@ class Init extends Command
     {
         $path = $this->project->rootDirectory . '/' . $filename;
         $force = $this->input->getOption('force');
-        assert(is_bool($force));
 
         if (file_exists($path)) {
             if ($force || $this->style->confirm('Overwrite ' . $filename, $this->input->isInteractive())) {

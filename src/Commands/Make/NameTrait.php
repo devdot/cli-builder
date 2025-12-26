@@ -24,7 +24,6 @@ trait NameTrait
     protected function getMakeName(): string
     {
         $name = $this->input->getArgument('name');
-        assert(is_string($name));
         return $this->makeName ??= str_replace('\\', '/', $name);
     }
 

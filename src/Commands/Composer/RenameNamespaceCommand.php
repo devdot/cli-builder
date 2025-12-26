@@ -94,10 +94,10 @@ class RenameNamespaceCommand extends Command
         $files = array_filter($files, fn(string $file) => $file !== '.' && $file !== '..');
         $files = array_map(fn(string $file) => $base . DIRECTORY_SEPARATOR . $file, $files);
 
-        $dirs = array_filter($files, 'is_dir');
-        $files = array_filter($files, 'is_file');
+        $dirs = array_filter($files, is_dir(...));
+        $files = array_filter($files, is_file(...));
 
-        return array_merge($files, ...array_map(fn(string $dir) => $this->getAllFilePaths($dir), $dirs));
+        return array_merge($files, ...array_map($this->getAllFilePaths(...), $dirs));
     }
 
     private function handleBins(): void
@@ -118,12 +118,10 @@ class RenameNamespaceCommand extends Command
         $files = array_filter($files, fn(string $file) => str_ends_with($file, '.php'));
 
         foreach ($files as $file) {
-            $this->handleFile($file, function (string $line): string {
-                return match (explode(' ', $line, 2)[0]) {
-                    'namespace' => str_replace('namespace ' . $this->source, 'namespace ' . $this->target, $line),
-                    'use' => str_replace('use ' . $this->source, 'use ' . $this->target, $line),
-                    default => str_replace('\\' . $this->source, '\\' . $this->target, $line),
-                };
+            $this->handleFile($file, fn(string $line): string => match (explode(' ', $line, 2)[0]) {
+                'namespace' => str_replace('namespace ' . $this->source, 'namespace ' . $this->target, $line),
+                'use' => str_replace('use ' . $this->source, 'use ' . $this->target, $line),
+                default => str_replace('\\' . $this->source, '\\' . $this->target, $line),
             });
         }
     }

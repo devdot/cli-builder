@@ -10,6 +10,7 @@ class Printer extends NettePrinter
     public int $linesBetweenMethods = 1;
     public int $linesBetweenUseTypes = 1;
 
+    #[\Override]
     protected function isBraceOnNextLine(bool $multiLine, bool $hasReturnType): bool
     {
         return !$multiLine;

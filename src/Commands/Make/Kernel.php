@@ -34,7 +34,6 @@ class Kernel extends MakeCommand
 
                 // load the class from a real object
                 $class = ClassType::from($classname, true);
-                assert($class instanceof ClassType);
                 $this->updateConstructor($class);
                 $this->updateLiteralsArray($class, $namespace, 'services');
                 $this->updateLiteralsArray($class, $namespace, 'providers');
@@ -87,7 +86,7 @@ class Kernel extends MakeCommand
         assert(is_array($currentValues));
 
         foreach ($currentValues as $key => $value) {
-            if (class_exists($value)) {
+            if (is_string($value) && class_exists($value)) {
                 $values[$key] = new Literal($namespace->simplifyName('\\' . $value) . '::class');
             } else {
                 $values[$key] = $value;

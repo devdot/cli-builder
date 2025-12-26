@@ -28,7 +28,6 @@ class AddBinary extends Command
         }
 
         $rename = $this->input->getOption('rename');
-        assert(is_string($rename));
         $newPath = $this->project->rootDirectory . '/' . $rename;
 
         $this->runProcess(['mv', $binPath, $newPath]);

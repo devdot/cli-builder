@@ -12,3 +12,4 @@ bin/*.phar binary
 tests/ export-ignore
 
 phpstan.neon export-ignore
+rector.php export-ignore
