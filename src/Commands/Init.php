@@ -70,7 +70,7 @@ class Init extends Command
 
         $defaultName = $data['name'];
         if ($data['name'] === 'devdot/cli-project') {
-            $name = $_SERVER['COMPOSER_DEFAULT_VENDOR'];
+            $name = $_SERVER['COMPOSER_DEFAULT_VENDOR'] ?? null;
             $name = is_string($name) ? $name : 'devdot';
             $defaultName = $name . '/' . basename($this->project->rootDirectory);
         }
